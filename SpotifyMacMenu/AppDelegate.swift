@@ -21,26 +21,22 @@ var spotifyManager = SpotifyManager(
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    var window: NSWindow!
+    var popover = NSPopover.init()
+    var statusBar: StatusBarController?
 
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
-        // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView()
-        
-        
+        // Create the SwiftUI view that provides the contents
+               let contentView = ContentView()
 
-        // Create the window and set the content view. 
-        window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-            backing: .buffered, defer: false)
-        window.center()
-        window.setFrameAutosaveName("Main Window")
-        window.contentView = NSHostingView(rootView: contentView)
-        window.makeKeyAndOrderFront(nil)
+               // Set the SwiftUI's ContentView to the Popover's ContentViewController
+               popover.contentSize = NSSize(width: 360, height: 360)
+               popover.contentViewController = NSHostingController(rootView: contentView)
+               
+               // Create the Status Bar Item with the above Popover
+               statusBar = StatusBarController.init(popover)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -67,11 +63,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let urlString  = descriptor.stringValue,
             let url        = URL(string: urlString) {
             spotifyManager.saveToken(from: url) { (success) in
-                print("IN SUCCESS")
-                if success {
-                    print(spotifyManager.hasToken)
-                    print(spotifyManager.getAccessToken())
-                }
                 
             }
         }

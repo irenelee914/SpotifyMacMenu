@@ -24,9 +24,6 @@ struct ContentView: View {
                     print(me)
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            Button("click"){
-                print("")
-            }
         }
     }
 }
