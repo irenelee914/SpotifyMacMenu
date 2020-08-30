@@ -7,13 +7,33 @@
 //
 
 import SwiftUI
+import OAuthSwift
+
+let oauthswift = OAuth2Swift(
+    consumerKey:    "17ac21f717f24be7b6d9bf835785da4d",
+    consumerSecret: "10b27d218e9049789d8f6fb736f5a413",
+    authorizeUrl:   "https://accounts.spotify.com/authorize",
+    responseType:   "code"
+)
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, World!")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        VStack{
+            Button("Hello, World!"){
+                spotifyManager.myProfile { (me) in
+                    print(me)
+                }
+            }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            Button("click"){
+                print("")
+            }
+        }
     }
 }
+
+
+
+
 
 
 struct ContentView_Previews: PreviewProvider {

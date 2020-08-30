@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00FA81E0C8290059D19F0F9E /* Pods_SpotifyMacMenu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCF3F1D487B9F653C8442BEA /* Pods_SpotifyMacMenu.framework */; };
 		1340F73324A2CAE600ECB17C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1340F73224A2CAE600ECB17C /* AppDelegate.swift */; };
 		1340F73524A2CAE600ECB17C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1340F73424A2CAE600ECB17C /* ContentView.swift */; };
 		1340F73724A2CAEA00ECB17C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1340F73624A2CAEA00ECB17C /* Assets.xcassets */; };
@@ -23,6 +24,9 @@
 		1340F73C24A2CAEA00ECB17C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1340F73E24A2CAEA00ECB17C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1340F73F24A2CAEA00ECB17C /* SpotifyMacMenu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpotifyMacMenu.entitlements; sourceTree = "<group>"; };
+		B92D7E51C82F5B4206B43B7E /* Pods-SpotifyMacMenu.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpotifyMacMenu.debug.xcconfig"; path = "Target Support Files/Pods-SpotifyMacMenu/Pods-SpotifyMacMenu.debug.xcconfig"; sourceTree = "<group>"; };
+		B940A093047B04A0424C2FFD /* Pods-SpotifyMacMenu.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpotifyMacMenu.release.xcconfig"; path = "Target Support Files/Pods-SpotifyMacMenu/Pods-SpotifyMacMenu.release.xcconfig"; sourceTree = "<group>"; };
+		BCF3F1D487B9F653C8442BEA /* Pods_SpotifyMacMenu.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpotifyMacMenu.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00FA81E0C8290059D19F0F9E /* Pods_SpotifyMacMenu.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +46,8 @@
 			children = (
 				1340F73124A2CAE600ECB17C /* SpotifyMacMenu */,
 				1340F73024A2CAE600ECB17C /* Products */,
+				AD16D014B8BB50A5382FE53F /* Pods */,
+				74B6F760DE1102048DF72590 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,6 +81,23 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		74B6F760DE1102048DF72590 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BCF3F1D487B9F653C8442BEA /* Pods_SpotifyMacMenu.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AD16D014B8BB50A5382FE53F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B92D7E51C82F5B4206B43B7E /* Pods-SpotifyMacMenu.debug.xcconfig */,
+				B940A093047B04A0424C2FFD /* Pods-SpotifyMacMenu.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -81,9 +105,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1340F74224A2CAEA00ECB17C /* Build configuration list for PBXNativeTarget "SpotifyMacMenu" */;
 			buildPhases = (
+				21D44D01AC56DC425AEA0539 /* [CP] Check Pods Manifest.lock */,
 				1340F72B24A2CAE600ECB17C /* Sources */,
 				1340F72C24A2CAE600ECB17C /* Frameworks */,
 				1340F72D24A2CAE600ECB17C /* Resources */,
+				21D8BBFDD0ACA321A1B58475 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -139,6 +165,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		21D44D01AC56DC425AEA0539 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SpotifyMacMenu-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		21D8BBFDD0ACA321A1B58475 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SpotifyMacMenu/Pods-SpotifyMacMenu-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SpotifyMacMenu/Pods-SpotifyMacMenu-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SpotifyMacMenu/Pods-SpotifyMacMenu-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1340F72B24A2CAE600ECB17C /* Sources */ = {
@@ -279,9 +347,11 @@
 		};
 		1340F74324A2CAEA00ECB17C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B92D7E51C82F5B4206B43B7E /* Pods-SpotifyMacMenu.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = SpotifyMacMenu/SpotifyMacMenu.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"SpotifyMacMenu/Preview Content\"";
@@ -302,9 +372,11 @@
 		};
 		1340F74424A2CAEA00ECB17C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B940A093047B04A0424C2FFD /* Pods-SpotifyMacMenu.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = SpotifyMacMenu/SpotifyMacMenu.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"SpotifyMacMenu/Preview Content\"";
