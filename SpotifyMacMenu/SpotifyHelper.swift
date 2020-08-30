@@ -34,31 +34,34 @@ class SpotifyHelper: ObservableObject {
     @Published public var accessToken:String?
     @Published public var contextURI:String?
     
+    var playRecentlyPlayedTrack:Bool?
+    
     
     //public functions
     
     //get most recent 50 tracks
     public func getUserRecentlyPlayedTracks() -> Void {
-        let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-        let headers = ["Accept" : "application/json", "Content-Type" : "application/json", "Authorization": "Bearer \(self.accessToken!)"]
+        let parameters = ["Authorization" : "Bearer \(self.accessToken!)", "limit":"1"]
+        let headers:HTTPHeaders = ["Accept" : "application/json", "Content-Type" : "application/json", "Authorization": "Bearer \(self.accessToken!)"]
         
-        Alamofire.request("https://api.spotify.com/v1/me/player/recently-played", method: .get, parameters: parameters as Parameters, encoding:URLEncoding.default,
+        AF.request("https://api.spotify.com/v1/me/player/recently-played", method: .get, parameters: parameters as Parameters, encoding:URLEncoding.default,
                           headers: headers)
             .responseJSON { response in
                 
                 do {
                     let infoJSON = try JSON(data: response.data!)
                     print(infoJSON)
-                    self.onPlay = infoJSON["is_playing"].boolValue
-                    self.onShuffle = infoJSON["shuffle_state"].boolValue
-                    self.repeatState = infoJSON["repeat_state"].stringValue
-                    self.trackImageString = infoJSON["item"]["album"]["images"][0]["url"].stringValue
+                    self.onPlay = false
+                    self.onShuffle = false
+                    self.repeatState = "off"
+                    self.trackImageString = infoJSON["items"][0]["track"]["album"]["images"][0]["url"].stringValue
                     self.getImageData()
-                    self.trackName = infoJSON["item"]["name"].stringValue
-                    self.trackProgress = infoJSON["progress_ms"].intValue
-                    self.trackDuration = infoJSON["item"]["duration_ms"].intValue
-                    self.trackArtist = infoJSON["item"]["artists"][0]["name"].stringValue
-                    self.contextURI = infoJSON["context"]["uri"].stringValue
+                    self.trackName = infoJSON["items"][0]["track"]["name"].stringValue
+                    self.trackProgress = 0
+                    self.trackDuration = infoJSON["items"][0]["track"]["duration_ms"].intValue
+                    self.trackArtist = infoJSON["items"][0]["track"]["artists"][0]["name"].stringValue
+                    self.contextURI = infoJSON["items"][0]["track"]["context"]["uri"].stringValue
+                    print(self.contextURI)
                 }catch {
                     print("something went wrong 2")
                 }
@@ -68,14 +71,14 @@ class SpotifyHelper: ObservableObject {
     
     public func getUserCurrentlyPlayingTrack() -> Void {
         let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-        let headers = ["Accept" : "application/json", "Content-Type" : "application/json", "Authorization": "Bearer \(self.accessToken!)"]
+        let headers:HTTPHeaders  = ["Accept" : "application/json", "Content-Type" : "application/json", "Authorization": "Bearer \(self.accessToken!)"]
         
-        Alamofire.request("https://api.spotify.com/v1/me/player/currently-playing", method: .get, parameters: parameters as Parameters, encoding:URLEncoding.default,
+        AF.request("https://api.spotify.com/v1/me/player/currently-playing", method: .get, parameters: parameters as Parameters, encoding:URLEncoding.default,
                           headers: headers)
             .responseJSON { response in
                 
                 do {
-                    let infoJSON = try JSON(data: response.data!)
+                    let infoJSON = try JSON(data: response.data ?? Data())
                     self.onPlay = infoJSON["is_playing"].boolValue
                     self.onShuffle = infoJSON["shuffle_state"].boolValue
                     self.repeatState = infoJSON["repeat_state"].stringValue
@@ -89,6 +92,7 @@ class SpotifyHelper: ObservableObject {
                 }catch {
                     print("something went wrong")
                     self.getUserRecentlyPlayedTracks()
+                    self.playRecentlyPlayedTrack = true
                 }
                 
         }
@@ -99,9 +103,9 @@ class SpotifyHelper: ObservableObject {
         //currently playing track, pause
         if self.onPlay! {
             let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-            let headers = ["Authorization": "Bearer \(self.accessToken!)"]
+            let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
             
-            Alamofire.request("https://api.spotify.com/v1/me/player/pause", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+            AF.request("https://api.spotify.com/v1/me/player/pause", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
                               headers: headers)
                 .responseJSON { response in
                     //track paused now
@@ -110,10 +114,16 @@ class SpotifyHelper: ObservableObject {
         }
         //currently on pause, play track
         else {
-           let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-            let headers = ["Authorization": "Bearer \(self.accessToken!)"]
+           
+           var parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+           
+            if self.playRecentlyPlayedTrack ?? false {
+                parameters = ["Authorization" : "Bearer \(self.accessToken!)", "context_uri":"\(self.contextURI!)"]
+            }
             
-            Alamofire.request("https://api.spotify.com/v1/me/player/play", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+            let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
+            
+            AF.request("https://api.spotify.com/v1/me/player/play", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
                               headers: headers)
                 .responseJSON { response in
                     //track playing now
@@ -124,9 +134,9 @@ class SpotifyHelper: ObservableObject {
     
     public func skipPlayBackNext() -> Void {
         let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-        let headers = ["Authorization": "Bearer \(self.accessToken!)"]
+        let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
         
-        Alamofire.request("https://api.spotify.com/v1/me/player/next", method: .post, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+        AF.request("https://api.spotify.com/v1/me/player/next", method: .post, parameters: parameters as Parameters, encoding:JSONEncoding.default,
                           headers: headers)
             .responseJSON { response in
                 self.getUserCurrentlyPlayingTrack()
@@ -135,9 +145,9 @@ class SpotifyHelper: ObservableObject {
     
     public func skipPlayBackPrev() -> Void {
         let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-        let headers = ["Authorization": "Bearer \(self.accessToken!)"]
+        let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
         
-        Alamofire.request("https://api.spotify.com/v1/me/player/previous", method: .post, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+        AF.request("https://api.spotify.com/v1/me/player/previous", method: .post, parameters: parameters as Parameters, encoding:JSONEncoding.default,
                           headers: headers)
             .responseJSON { response in
                 self.getUserCurrentlyPlayingTrack()
