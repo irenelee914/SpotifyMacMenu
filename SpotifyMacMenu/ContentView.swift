@@ -9,22 +9,28 @@
 import SwiftUI
 import OAuthSwift
 
-let oauthswift = OAuth2Swift(
-    consumerKey:    "17ac21f717f24be7b6d9bf835785da4d",
-    consumerSecret: "10b27d218e9049789d8f6fb736f5a413",
-    authorizeUrl:   "https://accounts.spotify.com/authorize",
-    responseType:   "code"
-)
 
 struct ContentView: View {
+    var spotifyHelper = SpotifyHelper.shared
+    
+    @State var sliderValue: Double = 0
     var body: some View {
+        
         VStack{
-            Button("Hello, World!"){
-                spotifyManager.myProfile { (me) in
-                    print(me)
-                }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            Text("\(spotifyHelper.trackName ?? "--")").frame(maxWidth: .infinity, maxHeight: .infinity)
+            Text("\(spotifyHelper.trackArtist ?? "--")").frame(maxWidth: .infinity, maxHeight: .infinity)
+            Slider(value: $sliderValue, in: 0...20, step: 1)
+            HStack{
+                Button("Prev"){
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                Button("Play"){
+                    
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                Button("Next"){
+                }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
+        
     }
 }
 

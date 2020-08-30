@@ -23,6 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var popover = NSPopover.init()
     var statusBar: StatusBarController?
+    var spotifyHelper = SpotifyHelper.shared
 
 
 
@@ -32,7 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                let contentView = ContentView()
 
                // Set the SwiftUI's ContentView to the Popover's ContentViewController
-               popover.contentSize = NSSize(width: 360, height: 360)
+               popover.contentSize = NSSize(width: 250, height: 290)
                popover.contentViewController = NSHostingController(rootView: contentView)
                
                // Create the Status Bar Item with the above Popover
@@ -63,7 +64,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let urlString  = descriptor.stringValue,
             let url        = URL(string: urlString) {
             spotifyManager.saveToken(from: url) { (success) in
-                
+                self.spotifyHelper.saveAuthToken(authAccessToken: spotifyManager.getAccessToken())
+                self.spotifyHelper.getUserCurrentlyPlayingTrack()
             }
         }
     }
