@@ -17,6 +17,7 @@ struct ContentView: View {
     var body: some View {
         
         VStack{
+            Image(nsImage: spotifyHelper.trackImage ?? NSImage())
             Text("\(spotifyHelper.trackName ?? "--")").frame(maxWidth: .infinity, maxHeight: .infinity)
             Text("\(spotifyHelper.trackArtist ?? "--")").frame(maxWidth: .infinity, maxHeight: .infinity)
             Slider(value: $sliderValue, in: 0...20, step: 1)

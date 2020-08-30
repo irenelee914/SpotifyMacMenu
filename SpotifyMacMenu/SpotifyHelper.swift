@@ -20,7 +20,8 @@ class SpotifyHelper: ObservableObject {
     static let shared = SpotifyHelper()
     
     //variables
-    @Published public var trackImage:String?
+    @Published public var trackImageString:String?
+    @Published public var trackImage:NSImage?
     @Published public var trackName:String?
     @Published public var trackArtist:String?
     @Published public var trackDuration:Int?
@@ -54,7 +55,8 @@ class SpotifyHelper: ObservableObject {
                     self.onPlay = infoJSON["is_playing"].boolValue
                     self.onShuffle = infoJSON["shuffle_state"].boolValue
                     self.repeatState = infoJSON["repeat_state"].stringValue
-                    self.trackImage = infoJSON["item"]["album"]["images"][0]["url"].stringValue
+                    self.trackImageString = infoJSON["item"]["album"]["images"][0]["url"].stringValue
+                    self.getImageData()
                     self.trackName = infoJSON["item"]["name"].stringValue
                     self.trackProgress = infoJSON["progress_ms"].intValue
                     self.trackDuration = infoJSON["item"]["duration_ms"].intValue
@@ -130,8 +132,14 @@ class SpotifyHelper: ObservableObject {
     }
     
     //MARK:- Private Functions
+
+    private func getImageData() -> Void {
+        if let url = NSURL(string: "\(self.trackImageString!)") {
+            if let data = NSData(contentsOf: url as URL) {
+                self.trackImage = NSImage(data: data as Data)
+            }
+        }
+    }
     
-//    init(userAccessToken:String) {
-//        self.accessToken = userAccessToken
-//    }
+    
 }
