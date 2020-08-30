@@ -11,7 +11,7 @@ import OAuthSwift
 
 
 struct ContentView: View {
-    var spotifyHelper = SpotifyHelper.shared
+    @ObservedObject var spotifyHelper = SpotifyHelper.shared
     
     @State var sliderValue: Double = 0
     var body: some View {
@@ -22,11 +22,13 @@ struct ContentView: View {
             Slider(value: $sliderValue, in: 0...20, step: 1)
             HStack{
                 Button("Prev"){
+                    self.spotifyHelper.skipPlayBackPrev()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 Button("Play"){
-                    
+                    self.spotifyHelper.startResumeTrack()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 Button("Next"){
+                    self.spotifyHelper.skipPlayBackNext()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }

@@ -31,6 +31,8 @@ class SpotifyHelper: ObservableObject {
     @Published public var repeatState:String?
     @Published public var onShuffle:Bool?
     @Published public var accessToken:String?
+    @Published public var contextURI:String?
+    
     
     //public functions
     
@@ -41,7 +43,6 @@ class SpotifyHelper: ObservableObject {
     
     public func getUserCurrentlyPlayingTrack() -> Void {
         let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-        print(parameters)
         let headers = ["Accept" : "application/json", "Content-Type" : "application/json", "Authorization": "Bearer \(self.accessToken!)"]
         
         Alamofire.request("https://api.spotify.com/v1/me/player/currently-playing", method: .get, parameters: parameters as Parameters, encoding:URLEncoding.default,
@@ -58,6 +59,7 @@ class SpotifyHelper: ObservableObject {
                     self.trackProgress = infoJSON["progress_ms"].intValue
                     self.trackDuration = infoJSON["item"]["duration_ms"].intValue
                     self.trackArtist = infoJSON["item"]["artists"][0]["name"].stringValue
+                    self.contextURI = infoJSON["context"]["uri"].stringValue
                 }catch {
                     print("something went wrong")
                 }
@@ -67,15 +69,52 @@ class SpotifyHelper: ObservableObject {
     }
     
     public func startResumeTrack() -> Void {
-        
+        //currently playing track, pause
+        if self.onPlay! {
+            let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+            let headers = ["Authorization": "Bearer \(self.accessToken!)"]
+            
+            Alamofire.request("https://api.spotify.com/v1/me/player/pause", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+                              headers: headers)
+                .responseJSON { response in
+                    //track paused now
+                    self.onPlay = false
+            }
+        }
+        //currently on pause, play track
+        else {
+           let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+            let headers = ["Authorization": "Bearer \(self.accessToken!)"]
+            
+            Alamofire.request("https://api.spotify.com/v1/me/player/play", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+                              headers: headers)
+                .responseJSON { response in
+                    //track playing now
+                    self.onPlay = true
+            }
+        }
     }
     
     public func skipPlayBackNext() -> Void {
+        let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+        let headers = ["Authorization": "Bearer \(self.accessToken!)"]
         
+        Alamofire.request("https://api.spotify.com/v1/me/player/next", method: .post, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+                          headers: headers)
+            .responseJSON { response in
+                self.getUserCurrentlyPlayingTrack()
+        }
     }
     
     public func skipPlayBackPrev() -> Void {
+        let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+        let headers = ["Authorization": "Bearer \(self.accessToken!)"]
         
+        Alamofire.request("https://api.spotify.com/v1/me/player/previous", method: .post, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+                          headers: headers)
+            .responseJSON { response in
+                self.getUserCurrentlyPlayingTrack()
+        }
     }
     
     public func toggleShuffle() -> Void {
