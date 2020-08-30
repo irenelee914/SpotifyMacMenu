@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (4.9.1)
+  - Alamofire (5.2.2)
   - OAuthSwift (2.0.0)
   - SpotifyKit (0.0.5)
   - SwiftyJSON (5.0.0)
@@ -22,11 +22,11 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SpotifyKit:
-    :commit: 7a9274cc18226af2359bb4d96ddf46cd491d4837
+    :commit: b92bb6c9a295ca78598055569311b42ffa6f9b4d
     :git: https://github.com/irenelee914/SpotifyKit
 
 SPEC CHECKSUMS:
-  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  Alamofire: 814429acc853c6c54ff123fc3d2ef66803823ce0
   OAuthSwift: 6805456763cf1c7ae0c16765257ed430b7aacae7
   SpotifyKit: eea0876200c3b9deed7181bb53eb585a6125c830
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7

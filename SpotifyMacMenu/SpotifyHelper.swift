@@ -39,7 +39,31 @@ class SpotifyHelper: ObservableObject {
     
     //get most recent 50 tracks
     public func getUserRecentlyPlayedTracks() -> Void {
+        let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+        let headers = ["Accept" : "application/json", "Content-Type" : "application/json", "Authorization": "Bearer \(self.accessToken!)"]
         
+        Alamofire.request("https://api.spotify.com/v1/me/player/recently-played", method: .get, parameters: parameters as Parameters, encoding:URLEncoding.default,
+                          headers: headers)
+            .responseJSON { response in
+                
+                do {
+                    let infoJSON = try JSON(data: response.data!)
+                    print(infoJSON)
+                    self.onPlay = infoJSON["is_playing"].boolValue
+                    self.onShuffle = infoJSON["shuffle_state"].boolValue
+                    self.repeatState = infoJSON["repeat_state"].stringValue
+                    self.trackImageString = infoJSON["item"]["album"]["images"][0]["url"].stringValue
+                    self.getImageData()
+                    self.trackName = infoJSON["item"]["name"].stringValue
+                    self.trackProgress = infoJSON["progress_ms"].intValue
+                    self.trackDuration = infoJSON["item"]["duration_ms"].intValue
+                    self.trackArtist = infoJSON["item"]["artists"][0]["name"].stringValue
+                    self.contextURI = infoJSON["context"]["uri"].stringValue
+                }catch {
+                    print("something went wrong 2")
+                }
+                
+        }
     }
     
     public func getUserCurrentlyPlayingTrack() -> Void {
@@ -64,6 +88,7 @@ class SpotifyHelper: ObservableObject {
                     self.contextURI = infoJSON["context"]["uri"].stringValue
                 }catch {
                     print("something went wrong")
+                    self.getUserRecentlyPlayedTracks()
                 }
                 
         }
@@ -124,6 +149,10 @@ class SpotifyHelper: ObservableObject {
     }
     
     public func toggleRepeat() -> Void {
+        
+    }
+    
+    public func seekToPosition(seekPosition position:Int) -> Void {
         
     }
     

@@ -114,6 +114,7 @@ fileprivate enum SpotifyScope: String {
     case readCurrentlyPlaying = "user-read-currently-playing"
     case userModifyPlaybackState = "user-modify-playback-state"
     case readPlaybackState = "user-read-playback-state"
+    case readRecentlyPlayed = "user-read-recently-played"
     
     /**
      Creates a string to pass as parameter value
@@ -708,7 +709,7 @@ public class SpotifyManager {
         return [SpotifyParameter.clientId: application.clientId,
                 SpotifyParameter.responseType: SpotifyAuthorizationResponseType.code.rawValue,
                 SpotifyParameter.redirectUri: application.redirectUri,
-                SpotifyParameter.scope: SpotifyScope.string(with: [.readPrivate, .readEmail, .libraryModify, .libraryRead, .readCurrentlyPlaying, .userModifyPlaybackState, .readPlaybackState])]
+                SpotifyParameter.scope: SpotifyScope.string(with: [.readPrivate, .readEmail, .libraryModify, .libraryRead, .readCurrentlyPlaying, .userModifyPlaybackState, .readPlaybackState, .readRecentlyPlayed])]
     }
     
     /**
