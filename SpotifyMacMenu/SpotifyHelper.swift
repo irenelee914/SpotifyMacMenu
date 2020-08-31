@@ -33,6 +33,7 @@ class SpotifyHelper: ObservableObject {
     @Published public var onShuffle:Bool?
     @Published public var accessToken:String?
     @Published public var contextURI:String?
+    @Published public var activeDevice:String?
     
     var playRecentlyPlayedTrack:Bool?
     
@@ -60,8 +61,10 @@ class SpotifyHelper: ObservableObject {
                     self.trackProgress = 0
                     self.trackDuration = infoJSON["items"][0]["track"]["duration_ms"].intValue
                     self.trackArtist = infoJSON["items"][0]["track"]["artists"][0]["name"].stringValue
-                    self.contextURI = infoJSON["items"][0]["track"]["context"]["uri"].stringValue
-                    print(self.contextURI)
+                    self.contextURI = infoJSON["items"][0]["context"]["uri"].stringValue
+                    
+                    //get active device ID
+                    self.getActiveDevice()
                 }catch {
                     print("something went wrong 2")
                 }
@@ -115,12 +118,40 @@ class SpotifyHelper: ObservableObject {
         //currently on pause, play track
         else {
            
-           var parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-           
+            //if no current track is playing, play the recently played song
             if self.playRecentlyPlayedTrack ?? false {
-                parameters = ["Authorization" : "Bearer \(self.accessToken!)", "context_uri":"\(self.contextURI!)"]
+                let semaphore = DispatchSemaphore (value: 0)
+
+                let parameters = "{\"context_uri\":\"\(self.contextURI!)\",\"offset\":{\"position\":5},\"position_ms\":0}"
+                let postData = parameters.data(using: .utf8)
+
+                var request = URLRequest(url: URL(string: "https://api.spotify.com/v1/me/player/play?device_id=\(self.activeDevice!)")!,timeoutInterval: Double.infinity)
+                request.addValue("application/json", forHTTPHeaderField: "Accept")
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.addValue("Bearer \(self.accessToken!)", forHTTPHeaderField: "Authorization")
+
+                request.httpMethod = "PUT"
+                request.httpBody = postData
+
+                let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                  guard let data = data else {
+                    print(String(describing: error))
+                    self.onPlay = true
+                    return
+                  }
+                  print(String(data: data, encoding: .utf8)!)
+                  semaphore.signal()
+                }
+
+                task.resume()
+                semaphore.wait()
+                self.playRecentlyPlayedTrack = false
+                return
+                
             }
             
+            //play the current song
+            let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
             let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
             
             AF.request("https://api.spotify.com/v1/me/player/play", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
@@ -170,6 +201,25 @@ class SpotifyHelper: ObservableObject {
         self.accessToken = userAccessToken
     }
     
+    public func getActiveDevice() -> Void {
+        let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+        let headers:HTTPHeaders  = ["Accept" : "application/json", "Content-Type" : "application/json", "Authorization": "Bearer \(self.accessToken!)"]
+        
+        AF.request("https://api.spotify.com/v1/me/player/devices", method: .get, parameters: parameters as Parameters, encoding:URLEncoding.default,
+                          headers: headers)
+            .responseJSON { response in
+                
+                do {
+                    let infoJSON = try JSON(data: response.data ?? Data())
+                    self.activeDevice = infoJSON["devices"][0]["id"].stringValue
+                    print(self.activeDevice)
+                }catch {
+  
+                }
+        }
+
+    }
+    
     //MARK:- Private Functions
 
     private func getImageData() -> Void {
@@ -181,4 +231,19 @@ class SpotifyHelper: ObservableObject {
     }
     
     
+    
+    
+}
+
+extension String: ParameterEncoding {
+
+    public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+        var request = try urlRequest.asURLRequest()
+        request.httpBody = data(using: .utf8, allowLossyConversion: false)
+        
+        print("{\"context_uri\":\"spotify:album:5ht7ItJgpBH7W6vJ5BqpPr\",\"offset\":{\"position\":5},\"position_ms\":0}")
+        
+        return request
+    }
+
 }
