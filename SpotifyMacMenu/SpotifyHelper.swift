@@ -220,6 +220,7 @@ class SpotifyHelper: ObservableObject {
 
     }
     
+    
     //MARK:- Private Functions
 
     private func getImageData() -> Void {
