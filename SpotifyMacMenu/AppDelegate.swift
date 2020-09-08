@@ -20,26 +20,26 @@ var spotifyManager = SpotifyManager(
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-
+    
     var popover = NSPopover.init()
     var statusBar: StatusBarController?
     var spotifyHelper = SpotifyHelper.shared
-
-
-
+    
+    
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
         // Create the SwiftUI view that provides the contents
-               let contentView = LaunchView().environmentObject(ViewLaunch())
-
-               // Set the SwiftUI's ContentView to the Popover's ContentViewController
-               popover.contentSize = NSSize(width: 250, height: 290)
-               popover.contentViewController = NSHostingController(rootView: contentView)
-               
-               // Create the Status Bar Item with the above Popover
-               statusBar = StatusBarController.init(popover)
+        let contentView = LaunchView().environmentObject(ViewLaunch())
+        
+        // Set the SwiftUI's ContentView to the Popover's ContentViewController
+        popover.contentSize = NSSize(width: 250, height: 290)
+        popover.contentViewController = NSHostingController(rootView: contentView)
+        
+        // Create the Status Bar Item with the above Popover
+        statusBar = StatusBarController.init(popover)
     }
-
+    
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
         
@@ -65,6 +65,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let url        = URL(string: urlString) {
             spotifyManager.saveToken(from: url) { (success) in
                 self.spotifyHelper.saveAuthToken(authAccessToken: spotifyManager.getAccessToken())
+                //self.spotifyHelper.getActiveDevice()
                 self.spotifyHelper.getUserCurrentlyPlayingTrack()
             }
         }

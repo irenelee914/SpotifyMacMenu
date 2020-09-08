@@ -35,7 +35,7 @@ class SpotifyHelper: ObservableObject {
     @Published public var contextURI:String?
     @Published public var activeDevice:String?
     
-    var playRecentlyPlayedTrack:Bool?
+    var playRecentlyPlayedTrack = true
     
     
     //public functions
@@ -51,7 +51,9 @@ class SpotifyHelper: ObservableObject {
                 
                 do {
                     let infoJSON = try JSON(data: response.data!)
-                    print(infoJSON)
+                    //get active device ID
+                    self.getActiveDevice()
+                    
                     self.onPlay = false
                     self.onShuffle = false
                     self.repeatState = "off"
@@ -62,9 +64,9 @@ class SpotifyHelper: ObservableObject {
                     self.trackDuration = infoJSON["items"][0]["track"]["duration_ms"].intValue
                     self.trackArtist = infoJSON["items"][0]["track"]["artists"][0]["name"].stringValue
                     self.contextURI = infoJSON["items"][0]["context"]["uri"].stringValue
+           
+                    self.playRecentlyPlayedTrack = true
                     
-                    //get active device ID
-                    self.getActiveDevice()
                 }catch {
                     print("something went wrong 2")
                 }
@@ -82,6 +84,9 @@ class SpotifyHelper: ObservableObject {
                 
                 do {
                     let infoJSON = try JSON(data: response.data ?? Data())
+                    //get active device ID
+                    self.getActiveDevice()
+                    
                     self.onPlay = infoJSON["is_playing"].boolValue
                     self.onShuffle = infoJSON["shuffle_state"].boolValue
                     self.repeatState = infoJSON["repeat_state"].stringValue
@@ -93,9 +98,11 @@ class SpotifyHelper: ObservableObject {
                     self.trackArtist = infoJSON["item"]["artists"][0]["name"].stringValue
                     self.contextURI = infoJSON["context"]["uri"].stringValue
                 }catch {
+                    if self.activeDevice == nil || self.activeDevice == ""{
+                        self.getUserRecentlyPlayedTracks()
+                        self.playRecentlyPlayedTrack = true
+                    }
                     print("something went wrong")
-                    self.getUserRecentlyPlayedTracks()
-                    self.playRecentlyPlayedTrack = true
                 }
                 
         }
@@ -104,6 +111,8 @@ class SpotifyHelper: ObservableObject {
     
     public func startResumeTrack() -> Void {
         //currently playing track, pause
+        self.getUserCurrentlyPlayingTrack()
+        
         if self.onPlay! {
             let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
             let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
@@ -119,7 +128,7 @@ class SpotifyHelper: ObservableObject {
         else {
            
             //if no current track is playing, play the recently played song
-            if self.playRecentlyPlayedTrack ?? false {
+            if self.playRecentlyPlayedTrack {
                 let semaphore = DispatchSemaphore (value: 0)
 
                 let parameters = "{\"context_uri\":\"\(self.contextURI!)\",\"offset\":{\"position\":5},\"position_ms\":0}"
@@ -136,7 +145,6 @@ class SpotifyHelper: ObservableObject {
                 let task = URLSession.shared.dataTask(with: request) { data, response, error in
                   guard let data = data else {
                     print(String(describing: error))
-                    self.onPlay = true
                     return
                   }
                   print(String(data: data, encoding: .utf8)!)
@@ -146,19 +154,22 @@ class SpotifyHelper: ObservableObject {
                 task.resume()
                 semaphore.wait()
                 self.playRecentlyPlayedTrack = false
-                return
+                //track playing now
+                self.onPlay = true
                 
-            }
-            
-            //play the current song
-            let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
-            let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
-            
-            AF.request("https://api.spotify.com/v1/me/player/play", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
-                              headers: headers)
-                .responseJSON { response in
-                    //track playing now
-                    self.onPlay = true
+                
+                
+            } else{
+                //play the current song
+                let parameters = ["Authorization" : "Bearer \(self.accessToken!)"]
+                let headers:HTTPHeaders  = ["Authorization": "Bearer \(self.accessToken!)"]
+                
+                AF.request("https://api.spotify.com/v1/me/player/play", method: .put, parameters: parameters as Parameters, encoding:JSONEncoding.default,
+                                  headers: headers)
+                    .responseJSON { response in
+                        //track playing now
+                        self.onPlay = true
+                }
             }
         }
     }
@@ -212,7 +223,7 @@ class SpotifyHelper: ObservableObject {
                 do {
                     let infoJSON = try JSON(data: response.data ?? Data())
                     self.activeDevice = infoJSON["devices"][0]["id"].stringValue
-                    print(self.activeDevice)
+                    print("active device:\(self.activeDevice)")
                 }catch {
   
                 }

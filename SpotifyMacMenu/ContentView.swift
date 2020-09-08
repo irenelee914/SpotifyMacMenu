@@ -26,12 +26,17 @@ struct ContentView: View {
                     self.spotifyHelper.skipPlayBackPrev()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 Button("Play"){
+                    print(self.spotifyHelper.activeDevice)
                     self.spotifyHelper.startResumeTrack()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 Button("Next"){
                     self.spotifyHelper.skipPlayBackNext()
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+        }.onAppear{
+            self.spotifyHelper.getActiveDevice()
+            self.spotifyHelper.getUserRecentlyPlayedTracks()
+            print(self.spotifyHelper.activeDevice)
         }
         
     }

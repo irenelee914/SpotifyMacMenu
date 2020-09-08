@@ -10,14 +10,22 @@ import SwiftUI
 
 struct LaunchView: View {
     @EnvironmentObject var viewlaunch: ViewLaunch
+    @ObservedObject var spotifyHelper = SpotifyHelper.shared
     
     var body: some View {
         VStack {
-            if viewlaunch.currentPage == "OnboardingView" {
+            if viewlaunch.currentPage == "ContentView"  {
+                ContentView()
+            } else if spotifyHelper.activeDevice == "" || spotifyHelper.activeDevice == nil {
                 OnboardingView()
-            } else if viewlaunch.currentPage == "ContentView" {
+            } else {
                 ContentView()
             }
+//            if spotifyHelper.activeDevice == "" || spotifyHelper.activeDevice == nil {
+//                OnboardingView()
+//            }else {
+//                ContentView()
+//            }
         }
     }
 }
